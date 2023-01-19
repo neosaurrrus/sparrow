@@ -280,3 +280,66 @@ We can conditionally render things in Svelte via the use of the {`{#if ..} tag`}
 
 
 <h2>Events</h2>
+
+<p>We have looked at on click before but of course there is a whole bunch of events we can deal with:</p>
+
+<pre><code>
+    {`
+    <button on:click={handleClick}>Click me</button>
+    <button on:mouseover={handleMouseOver}>Hover me</button>
+    <button on:mouseout={e => console.log('I mouse outed!')}>Leave Me</button>
+    <button on:keydown|once={handleKeyDown}>Press a key ...just only once</button>
+    <form on:submit|preventDefault|once={handleFormSubmit}>...Form stuff here with chained events options</form>
+    `}
+</code></pre>
+
+<p>What is cool is that components themselves can send their own events:</p>
+
+<pre><code>
+    {`
+    // Child Component
+    <script>
+        import { createEventDispatcher } from 'svelte'
+        const dispatch = createEventDispatcher() // Must be called as part of instantiation
+
+        function handleClick() {
+            dispatch('componentEvent', {message: 'Hello from the child component'})
+        }
+    </script>
+
+    <button on:click={handleClick}>Click me</button>
+
+    // Parent Component
+    <script>
+        import Child from './Child.svelte'
+        <Child on:componentEvent={e => console.log(e.detail.message)}/>
+    </script>
+    `}
+</code></pre>
+
+<p>By default the component events only report up to the component above it. We can listen out for events in deeply nested events with a handy shortcut to bubble up the event accordingly:</p>
+
+<pre><code>
+    {`
+    // MiddleComponent
+    <script>
+        import {BottomComponent} from 'svelte/internal' // Contains the event dispatcher
+    </script>
+
+    <BottomComponent on:componentEvent/>
+
+    // TopComponent
+    <script>
+        import {MiddleComponent} from 'svelte/internal' // Inbetween Bottom and Top Components
+    </script>
+
+    <MiddleComponent on:componentEvent={e => console.log(e.detail.message)}/>
+    `}
+</code></pre>
+
+<p>DOM events work a similar way if we have a button that has an <em>on:click</em> in a child component we can do something with the parent by simply forwarding that to the parent component:</p>
+
+<pre><code>{`<CustomButton on:click={e => console.log('The button with an on:click event in the CustomButtom component was clicked')}`}</code></pre>
+
+<h2>Bindings</h2>
+<p>Typically w</p>
