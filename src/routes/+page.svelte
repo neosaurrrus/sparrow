@@ -342,4 +342,60 @@ We can conditionally render things in Svelte via the use of the {`{#if ..} tag`}
 <pre><code>{`<CustomButton on:click={e => console.log('The button with an on:click event in the CustomButtom component was clicked')}`}</code></pre>
 
 <h2>Bindings</h2>
-<p>Typically w</p>
+<p>Typically in similar frameworks we pass props down to child components and a component sets attributes on a element. That has been the way of things... till now. Svelte has the bind directive which sets up a two way connection:</p>
+
+<pre><code>
+    {`
+    <script>
+        let name = 'Bob'
+    </script>
+
+    <input bind:value={name}/> // This will update the value of name as the user types in the input
+    <p>{name}</p>
+    `}
+</code></pre>
+
+<p> Thats cool, whats cooler is that it will automatically handle conversion of strings (as everything is in the DOM) to what it needs to be typically.
+ Checkboxes require binding to checked attribute instead which makes sense as thats their nature. However you can often have a group of inputs working 
+ together such as a bunch of radio buttons or checkboxes. We can bind them as a group:</p>
+
+ <pre><code>
+    {`
+    <script>
+        let selected = 'french'
+
+        let teachers = [
+            {name: 'Bob', subject: 'English'},
+            {name: 'Sally', subject: 'French'},
+            {name: 'John', subject: 'Spanish'},
+        ]
+
+        let classRooms = ['A', 'B', 'C']
+
+        let notes = 'Add notes here'
+
+    </script>
+
+    <input type="radio" name="subject" value="french" bind:group={selected}/>
+    <input type="radio" name="subject" value="spanish" bind:group={selected}/>
+    <input type="radio" name="subject" value="english" bind:group={selected}/>
+    <p>{selected}</p>
+
+
+    {#each teachers as teacher} // Since the checkboxes are almost identical we can use an each block to render them
+        <input type="checkbox" bind:group={teachers} value={teacher}/>
+        <p>{teacher.name} teaches {teacher.subject}</p>
+    {/each}
+
+    <p>{JSON.stringify(teachers)}</p>
+
+    <select multiple bind:value={selected}> // Multiple select
+        {#each classRooms as room}
+            <option value={room}>{room}</option>
+        {/each}
+    </select>
+
+    <div contenteditable bind:innerHTML={notes}></div> // You can even bind to elements with contenteditable elements which is cool
+    `}
+ </code></pre>
+
